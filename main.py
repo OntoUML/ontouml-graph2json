@@ -3,9 +3,11 @@
 import time
 
 from modules.arguments import treat_user_arguments
-from modules.io_graph import safe_write_json_file
+from modules.encoder.encoder_main import encode_graph_to_json
+from modules.io_graph import load_all_graph_safely
+from modules.io_json import safe_write_json_file, save_json_file
 from modules.logger import initialize_logger
-from modules.utils import get_date_time, load_all_graph_safely
+from modules.utils import get_date_time
 
 
 def ontouml_graph2json(graph_file_path: str, execution_mode: str = "production") -> dict:
@@ -33,7 +35,7 @@ def ontouml_graph2json(graph_file_path: str, execution_mode: str = "production")
     ontology_graph = load_all_graph_safely(graph_file_path)
 
     # Encode Graph into JSON dictionary
-    # TBD
+    json_data = encode_graph_to_json(ontology_graph)
 
     if execution_mode == "production":
         # Get software's execution conclusion time
@@ -44,12 +46,10 @@ def ontouml_graph2json(graph_file_path: str, execution_mode: str = "production")
         logger.info(f"Encoding concluded on {end_date_time}. Total execution time: {elapsed_time} seconds.")
 
     # Save JSON file
-    output_file_path = safe_write_json_file(json_data, json_path)
+    output_file_path = save_json_file(json_data, graph_file_path)
     logger.info(f"Output JSON file successfully saved at {output_file_path}.")
 
-    return output_file_path
-
-    # return json_dict
+    return json_data
 
 
 if __name__ == '__main__':

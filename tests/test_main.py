@@ -2,10 +2,10 @@
 from pathlib import Path
 
 import pytest
-from tests.test_aux import get_test_list, compare_json_files_data
 
 from main import ontouml_graph2json
 from modules.io_json import safe_load_json_file
+from tests.test_aux import get_test_list, compare_json_files_data
 
 LIST_OF_TESTS = get_test_list()
 
@@ -28,9 +28,9 @@ def test_ontouml_graph2json(input_file: str) -> None:
 
     # Getting expected result
     expected_json_file = input_file.replace(".json", ".ttl")
-    resulting_json_data = safe_load_json_file(expected_json_file)
+    expected_json_data = safe_load_json_file(expected_json_file)
 
     # Comparing resulting and expected graphs
-    is_equal = compare_json_files_data(resulting_json_data, resulting_json_data, test_name)
+    is_equal = compare_json_files_data(resulting_json_data, expected_json_data, test_name)
 
     assert is_equal

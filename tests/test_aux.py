@@ -1,7 +1,7 @@
 """ Auxiliary test functions. """
 import glob
 
-import DeepDiff as DeepDiff
+import DeepDiff
 
 from modules.io_json import safe_write_json_file
 
@@ -20,7 +20,7 @@ def get_test_list() -> list[str]:
     return list_test_files
 
 
-def print_json_differences(resulting_json_data: dict, expected_json_data: dict, test_name: str) -> None:
+def save_json_differences(resulting_json_data: dict, expected_json_data: dict, test_name: str) -> None:
     """ Print three files:
         - test*_added.txt: contains elements newly added.
         - test*_removed.txt: contains elements removed.
@@ -60,6 +60,6 @@ def compare_json_files_data(resulting_json_data: dict, expected_json_data: dict,
     is_equal = (resulting_json_data == expected_json_data)
 
     if not is_equal:
-        print_json_differences(resulting_json_data, expected_json_data, test_name)
+        save_json_differences(resulting_json_data, expected_json_data, test_name)
 
     return is_equal

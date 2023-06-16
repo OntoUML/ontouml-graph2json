@@ -7,5 +7,5 @@ SOFTWARE_VERSION = "2023.06.15"
 SOFTWARE_URL = "https://github.com/OntoUML/ontouml-graph2json/"
 
 # URI Information
-USER_BASE_URI = "https://example.org#"
-ONTOUML_URI = "https://w3id.org/ontouml#"
+URI_ONTOLOGY = "https://example.org#"
+URI_ONTOUML = "https://w3id.org/ontouml#"

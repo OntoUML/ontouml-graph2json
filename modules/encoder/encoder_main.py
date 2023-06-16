@@ -1,7 +1,7 @@
 """ Encoding functions for the diverse types of objects that are part of the OntoUML-Schema. """
 from rdflib import Graph
 
-from modules.encoder.mount_dictionaries import mount_model_dict, mount_project_dict
+from modules.encoder.encoder_aux import create_data_dictionaries, mount_json_dictionary
 
 
 def encode_graph_to_json(ontology_graph: Graph) -> dict:
@@ -14,10 +14,10 @@ def encode_graph_to_json(ontology_graph: Graph) -> dict:
     :rtype: dict
     """
 
-    # Mounting model dictionary
-    model_dict = mount_model_dict(ontology_graph)
+    # Creating a list of individual dictionaries to be later mounted into a single dictionary using the compositions
+    list_dictionaries = create_data_dictionaries(ontology_graph)
 
-    # Mounting project dictionary
-    project_dict = mount_project_dict(ontology_graph)
+    # Mount dictionaries into a single dictionary using the compositions
+    json_data = mount_json_dictionary(list_dictionaries)
 
-    return project_dict
+    return json_data
