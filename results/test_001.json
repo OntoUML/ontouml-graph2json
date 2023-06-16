@@ -3,12 +3,12 @@
   "type": "Project",
   "name": "MyTestModel",
   "model": {
-    "id": "dGSNHRGFS_j2pAvw",
-    "type": "Project",
+    "id": "dGSNHRGFS_j2pAvw_root",
+    "type": "Package",
     "name": "MyTestModel",
-    "model": "dGSNHRGFS_j2pAvw_root",
     "description": null,
-    "diagrams": null
+    "propertyAssignments": null,
+    "contents": null
   },
   "description": null,
   "diagrams": null

@@ -1,4 +1,5 @@
 """ Functions that mount dictionaries that will be part of the generated JSON. """
+
 from rdflib import Graph, URIRef
 
 from globals import URI_ONTOUML, URI_ONTOLOGY
@@ -69,15 +70,21 @@ def create_individual_object_dictionary(uri_elem_id: URIRef, uri_elem_type: URIR
     elem_id = uri_elem_id.toPython().replace(URI_ONTOLOGY, "")
     elem_type = uri_elem_type.toPython().replace(URI_ONTOUML, "")
 
-    object_dictionary = {"id": elem_id,
-                         "type": elem_type
-                         }
+    object_dictionary = {"id": elem_id, "type": elem_type}
 
     for s, p, o in ontology_graph.triples((uri_elem_id, None, None)):
-        if URI_ONTOUML in p:
-            dict_key = p.toPython().replace(URI_ONTOUML, "")
-            dict_value = o.toPython().replace(URI_ONTOLOGY, "")
-            object_dictionary[dict_key] = dict_value
+
+        # CONDITION 1: The predicate must be defined in the OntoUML Vocabulary
+        if URI_ONTOUML not in p:
+            continue
+
+        # CONDITION 2: the object property 'project' is not available in the JSON representation
+        if "project" in p.toPython():
+            continue
+
+        dict_key = p.toPython().replace(URI_ONTOUML, "")
+        dict_value = o.toPython().replace(URI_ONTOLOGY, "")
+        object_dictionary[dict_key] = dict_value
 
     return object_dictionary
 
@@ -119,7 +126,7 @@ def create_data_dictionaries(ontology_graph: Graph) -> list[(dict, str)]:
     list_of_future_objects = get_future_objects(ontology_graph)
 
     for uri_elem_id, uri_elem_type in list_of_future_objects:
-        # Getting dictionary properties (FIRST FILL THEN QUERY OR THE OPPOSITE?)
+        # Getting dictionary properties
         object_dictionary = create_individual_object_dictionary(uri_elem_id, uri_elem_type, ontology_graph)
 
         # Complete dictionaries with null values
@@ -128,49 +135,3 @@ def create_data_dictionaries(ontology_graph: Graph) -> list[(dict, str)]:
         list_dictionaries.append(object_dictionary)
 
     return list_dictionaries
-
-
-def mount_json_dictionary(list_dictionaries: list[dict]) -> dict:
-    """ Receives a list with all individual object dictionaries and mount into a single dictionary to be converted
-    to JSON.
-
-    :param list_dictionaries: List with all individual object dictionaries.
-    :type list_dictionaries: list[dict]
-    :return: Single dictionary with all graph's content in a format to be encoded into a JSON file.
-    :rtype: dict
-    """
-
-    replaceable_keys = ["model"]
-    all_ids_list = []
-    json_data = {}
-
-    for dictionary in list_dictionaries:
-
-        # Getting list of all dictionary objects' ids (other than Project)
-        if dictionary['type'] != 'Project':
-            all_ids_list.append(dictionary['id'])
-
-        # Initializing final dictioinary with Project's dictionary.
-        if dictionary['type'] == 'Project':
-            json_data = dictionary.copy()
-
-    # For each dictionary, verifies if there are values that can be substituted by other dictionaries
-    for inc_dictionary in list_dictionaries:
-        for key in inc_dictionary.keys():
-
-            # Replace condition 1: Searched key must not be the own dictionary id
-            if key == "id":
-                continue
-
-            # Replace condition 2: Value must be an ID of other dictionary
-            if inc_dictionary[key] not in all_ids_list:
-                continue
-
-            # Replace condition 3: Key must be replaceable
-            if key not in replaceable_keys:
-                continue
-
-            # If all conditions are met, replace
-            json_data[key] = inc_dictionary.copy()
-
-    return json_data

@@ -5,9 +5,9 @@
   "type": "Project",
   "model": {
     "id": "dGSNHRGFS_j2pAvw_root",
+    "type": "Package",
     "name": "MyTestModel",
     "description": null,
-    "type": "Package",
     "propertyAssignments": null,
     "contents": null
   },
