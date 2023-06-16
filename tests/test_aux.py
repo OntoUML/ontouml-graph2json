@@ -1,9 +1,9 @@
 """ Auxiliary test functions. """
 import glob
 
-import DeepDiff
+from deepdiff import DeepDiff
 
-from modules.io_json import safe_write_json_file
+from modules.utils import safe_write_dict_to_txt_file
 
 
 def get_test_list() -> list[str]:
@@ -35,13 +35,11 @@ def save_json_differences(resulting_json_data: dict, expected_json_data: dict, t
     :type test_name: str
     """
 
-    diff_result = DeepDiff(resulting_json_data, expected_json_data)
+    diff_result = DeepDiff(resulting_json_data, expected_json_data, ignore_order=True)
+    diff_result_dict = diff_result.to_dict()
 
     base_path = "test_files/"
-
-    safe_write_json_file(diff_result["dictionary_item_added"], base_path + test_name + "_added.txt")
-    safe_write_json_file(diff_result["dictionary_item_removed"], base_path + test_name + "_removed.txt")
-    safe_write_json_file(diff_result["dictionary_values_changed"], base_path + test_name + "_changed.txt")
+    safe_write_dict_to_txt_file(diff_result_dict, base_path + test_name + "_diff.txt")
 
 
 def compare_json_files_data(resulting_json_data: dict, expected_json_data: dict, test_name: str) -> bool:

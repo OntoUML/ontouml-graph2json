@@ -5,7 +5,7 @@ import time
 from modules.arguments import treat_user_arguments
 from modules.encoder.encoder_main import encode_graph_to_json
 from modules.io_graph import load_all_graph_safely
-from modules.io_json import safe_write_json_file, save_json_file
+from modules.io_json import save_json_file
 from modules.logger import initialize_logger
 from modules.utils import get_date_time
 

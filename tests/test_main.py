@@ -27,7 +27,7 @@ def test_ontouml_graph2json(input_file: str) -> None:
     resulting_json_data = ontouml_graph2json(input_file, "test")
 
     # Getting expected result
-    expected_json_file = input_file.replace(".json", ".ttl")
+    expected_json_file = input_file.replace(".ttl", ".json")
     expected_json_data = safe_load_json_file(expected_json_file)
 
     # Comparing resulting and expected graphs

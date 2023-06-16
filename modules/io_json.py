@@ -60,18 +60,18 @@ def save_json_file(json_data: dict, graph_path: str) -> str:
     return output_file_path
 
 
-def safe_write_json_file(json_data: dict, json_path: str) -> None:
+def safe_write_json_file(dictionary_data: dict, json_path: str) -> None:
     """ Safely writes a received dictionary as a JSON file in the specified path.
 
-    :param json_data: Dictionary with information to be encoded into JSON.
-    :type json_data: dict
+    :param dictionary_data: Dictionary with information to be encoded into JSON.
+    :type dictionary_data: dict
     :param json_path: Path in which the JSON file will be saved.
     :type json_path: str
     """
 
     try:
         with open(json_path, "w") as write_file:
-            json.dump(json_data, write_file)
+            json.dump(dictionary_data, write_file)
     except IOError as error:
         file_description = f"output json file"
         report_error_io_write(json_path, file_description, error)
