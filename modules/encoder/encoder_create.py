@@ -1,5 +1,4 @@
 """ Functions that mount dictionaries that will be part of the generated JSON. """
-from pprint import pprint
 
 from rdflib import Graph, URIRef
 
