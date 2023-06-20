@@ -1,4 +1,5 @@
 """ Encoding functions for the diverse types of objects that are part of the OntoUML-Schema. """
+from pprint import pprint
 
 from rdflib import Graph
 

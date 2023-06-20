@@ -38,7 +38,7 @@ def save_json_differences(resulting_json_data: dict, expected_json_data: dict, t
     diff_result = DeepDiff(resulting_json_data, expected_json_data, ignore_order=True)
     diff_result_dict = diff_result.to_dict()
 
-    base_path = "test_files/"
+    base_path = "results/"
     safe_write_dict_to_txt_file(diff_result_dict, base_path + test_name + "_diff.txt")
 
 

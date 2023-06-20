@@ -50,9 +50,15 @@ def replace_id_pointer_in_dictionary(current_dictionary: dict, element_id: str, 
         # If is list, treat each element
         if type(current_dictionary[key]) is list:
             for item in current_dictionary[key]:
+
+                # If item is not a dictionary, evaluate
                 if item == element_id:
                     current_dictionary[key].remove(item)
                     current_dictionary[key].append(element_dict.copy())
+
+                # If item is a dictionary, perform algorithm
+                if type(item) is dict:
+                    replace_id_pointer_in_dictionary(item, element_id, element_dict)
 
         # Execute recursively if field is a dictionary:
         if type(current_dictionary[key]) is dict:

@@ -106,7 +106,12 @@ def create_individual_object_dictionary(uri_elem_id: URIRef, uri_elem_type: URIR
         dict_value = o.toPython().replace(URI_ONTOLOGY, "")
 
         if dict_key in json_field_list:
-            object_dictionary[dict_key] = [dict_value]
+            # If not initialized yet, first initialize
+            if dict_key not in object_dictionary:
+                object_dictionary[dict_key] = [dict_value]
+            # Else just add new element
+            else:
+                object_dictionary[dict_key].append(dict_value)
         else:
             object_dictionary[dict_key] = dict_value
 
