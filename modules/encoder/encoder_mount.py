@@ -1,82 +1,62 @@
 """ Functions relad to mounting the final dictionary. """
-from pprint import pprint
 
 from modules.errors import report_error_requirement_not_met
 
 
-def get_dictionary_to_be_moved(searched_id: str, list_dictionaries: list[dict]) -> (dict, list[dict]):
-    """ Identifies a dictionary to be moved and removes it from the list of dictionaries available.
-    If the intended dictionary is not found, an error is reported.
+def copy_dictionary_from_id(element_id: str, list_dictionaries: list[dict]) -> dict:
+    """ From a given ID, returns a copy of its corresponding dictionary from the list of dictionaries.
+    This operation does not remove the dictionary from the list of dictionaries.
+    If ID not found, calls error function.
 
-    :param searched_id: ID of the element that will have its dictionary moved.
-    :type searched_id: str
-    :param list_dictionaries: List of dictionaries being mounted.
+    :param element_id: ID of the object to have its dictionary to be returned.
+    :type element_id: str
+    :param list_dictionaries: List of all available dictionaries.
     :type list_dictionaries: list[dict]
-    :return: tuple where the 1st element is the dictionary to be moved and the 2nd is the updated dictionaries list.
-    :rtype: (dict, list[dict])
+    :return: Dictionary that has the element_id as its ID.
+    :rtype: dict
     """
 
-    # Search dictionary to be moved
-    for index, dictionary in enumerate(list_dictionaries):
-        if dictionary["id"] == searched_id:
-            moved_dictionary = list_dictionaries.pop(index)
-            return moved_dictionary, list_dictionaries
-
-    report_error_requirement_not_met("Dictionary not found in the list of dictionaries.")
-
-
-def substitute_internal_ids(all_ids_list: list[str], list_dictionaries: list[dict]) -> list[dict]:
-    """ Identifies internal ids to be substituted, gets the corresponding dictionaries and does the substitution.
-    There are four possibilities:
-    1. Field is a list and the algorithm must be applied to each element on the list.
-    2. Field is a dictionary and the algorithm must be applied to the dictionary.
-    3. Conditions met and value substituted.
-    4. Conditions not met and no value substituted.
-
-    :param all_ids_list: all ids that can be substituted.
-    :type all_ids_list: list[str]
-    :param list_dictionaries: List of dictionaries being mounted.
-    :type list_dictionaries: list[dict]
-    :return: Updated list of dictionaries being mounted (without the moved element).
-    :rtype: list[dict]
-    """
-
-    replaceable_keys = ["model", "contents"]
-
-    # For each dictionary, verifies if there are values that can be substituted by other dictionaries
     for dictionary in list_dictionaries:
-        for key in dictionary.keys():
+        if dictionary['id'] == element_id:
+            copied_dictionary = dictionary.copy()
+            return copied_dictionary
 
-            # VERIFYING CASE 1: if value is a dictionary
-            if type(dictionary[key]) is dict:
-                list_dictionaries = substitute_internal_ids(all_ids_list,[dictionary[key]])
+    report_error_requirement_not_met(f"ID {element_id} not found in dictionary list.")
+
+
+def replace_id_pointer_in_dictionary(current_dictionary: dict, element_id: str, element_dict: dict) -> None:
+    """ Runs through all the dictionary and search for pointers to the informed ID (element_id). If found, replaces the
+    pointer to the whole dictionary that has element_id as its ID (element_dict).
+
+    :param current_dictionary: Dictionary that is going to be searched for pointers to element_id.
+    :type current_dictionary: dict
+    :param element_id: ID to be searched inside the dictionary.
+    :type element_id: str
+    :param element_dict: Dictionary that has element_id as its ID.
+    :type element_dict: dict
+    """
+
+    for key in current_dictionary.keys():
+
+        # Do not search in ID field
+        if key == 'id':
+            continue
+
+        # If found, substitute
+        if current_dictionary[key] == element_id:
+            current_dictionary[key] = element_dict.copy()
             break
 
-            # VERIFYING CASE 1: if value is a dictionary
+        # If is list, treat each element
+        if type(current_dictionary[key]) is list:
+            for item in current_dictionary[key]:
+                if item == element_id:
+                    current_dictionary[key].remove(item)
+                    current_dictionary[key].append(element_dict.copy())
 
-
-
-            # VERIFYING CASES 3 AND 4
-
-            # CONDITION 1: Searched key must not be the own dictionary id
-            if key == "id":
-                continue
-            # CONDITION 2: Value must be an ID of other dictionary
-            if dictionary[key] not in all_ids_list:
-                continue
-            # CONDITION 3: Key must be replaceable
-            if key not in replaceable_keys:
-                continue
-
-            # VERIFYING CASE3
-
-            # If all conditions are met, get dictionary to be included
-            dictionary_to_move, list_dictionaries = get_dictionary_to_be_moved(dictionary[key], list_dictionaries)
-
-            # Moving dictionary
-            dictionary[key] = dictionary_to_move.copy()
-
-    return list_dictionaries
+        # Execute recursively if field is a dictionary:
+        if type(current_dictionary[key]) is dict:
+            replace_id_pointer_in_dictionary(current_dictionary[key], element_id, element_dict)
 
 
 def mount_json_dictionary(list_dictionaries: list[dict]) -> dict:
@@ -89,31 +69,31 @@ def mount_json_dictionary(list_dictionaries: list[dict]) -> dict:
     :rtype: dict
     """
 
-    all_ids_list = []
+    list_all_ids = []
 
-    # Getting list of all available dictionary objects' ids (other than Project)
+    # Get list of all IDs from all dictionaries
     for dictionary in list_dictionaries:
-        if dictionary['type'] != 'Project':
-            all_ids_list.append(dictionary['id'])
+        list_all_ids.append(dictionary["id"])
 
-    print("before while")
-    pprint(list_dictionaries)
-    count = 0
+    # For the rare cases when there is no Project
+    json_dictionary = list_dictionaries[0].copy()
 
-    # Iteratively substitute fields with ids as values by whole dictionaries until there is only one left
-    while len(list_dictionaries) != 1:
-        count += 1
-        print(f"\nInside while. Iteration {count}. Size = {len(list_dictionaries)}\n")
-
-        list_dictionaries = substitute_internal_ids(all_ids_list, list_dictionaries)
-
-        if count > 2:
+    # Get correct upper level dictionary if there is a Project
+    for dictionary in list_dictionaries:
+        if dictionary['type'] == 'Project':
+            json_dictionary = dictionary.copy()
             break
 
-    print("after while")
-    pprint(list_dictionaries)
+    for element_id in list_all_ids:
 
-    # The resulting dictionary in the list is going to be the full JSON dictionary
-    json_data = list_dictionaries[0].copy()
+        # Getting the corresponding dictionary
+        element_dict = copy_dictionary_from_id(element_id, list_dictionaries)
 
-    return json_data
+        # Do not treat the same dictionary
+        if json_dictionary['id'] == element_dict['id']:
+            continue
+
+        # Replace all possible occurrences of the ID in the current dictionary
+        replace_id_pointer_in_dictionary(json_dictionary, element_id, element_dict)
+
+    return json_dictionary
