@@ -165,7 +165,8 @@ cython_debug/
 /.idea/ontouml-graph2json.iml
 /.idea/inspectionProfiles/profiles_settings.xml
 /.idea/inspectionProfiles/Project_Default.xml
-/.idea/vcs.xml
+/.idea/*
 /results/
 /.idea/workspace.xml
 /tests/results/
+/.idea/sonarlint/issuestore/0/3/03a0fdeeb483e48a3c862cb7df7bad44a180d993

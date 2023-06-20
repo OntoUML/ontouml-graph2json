@@ -1,4 +1,5 @@
 """ Functions that mount dictionaries that will be part of the generated JSON. """
+from pprint import pprint
 
 from rdflib import Graph, URIRef
 
@@ -53,6 +54,25 @@ def get_future_objects(ontology_graph: Graph) -> list[(URIRef, URIRef)]:
     return list_future_objects
 
 
+def get_json_schema_dict_key(input_dict_key: str) -> str:
+    """ Receives a dictionary key obtained form the Graph and returns the corresponding JSON-Schema key.
+
+    :param input_dict_key:
+    :type input_dict_key:
+    :return:
+    :rtype:
+    """
+
+    json_schema_key = {"containsModelElement": "contents"}
+
+    if input_dict_key in json_schema_key:
+        updated_dict_key = json_schema_key[input_dict_key]
+    else:
+        updated_dict_key = input_dict_key
+
+    return updated_dict_key
+
+
 def create_individual_object_dictionary(uri_elem_id: URIRef, uri_elem_type: URIRef, ontology_graph: Graph) -> dict:
     """ Creates a single dictionary with all known data for a given object.
     The known data is queried from the ontology_graph.
@@ -71,6 +91,7 @@ def create_individual_object_dictionary(uri_elem_id: URIRef, uri_elem_type: URIR
     elem_type = uri_elem_type.toPython().replace(URI_ONTOUML, "")
 
     object_dictionary = {"id": elem_id, "type": elem_type}
+    json_field_list = ["contents"]
 
     for s, p, o in ontology_graph.triples((uri_elem_id, None, None)):
 
@@ -82,9 +103,13 @@ def create_individual_object_dictionary(uri_elem_id: URIRef, uri_elem_type: URIR
         if "project" in p.toPython():
             continue
 
-        dict_key = p.toPython().replace(URI_ONTOUML, "")
+        dict_key = get_json_schema_dict_key(p.toPython().replace(URI_ONTOUML, ""))
         dict_value = o.toPython().replace(URI_ONTOLOGY, "")
-        object_dictionary[dict_key] = dict_value
+
+        if dict_key in json_field_list:
+            object_dictionary[dict_key] = [dict_value]
+        else:
+            object_dictionary[dict_key] = dict_value
 
     return object_dictionary
 

@@ -1,4 +1,5 @@
 """ Functions relad to mounting the final dictionary. """
+from pprint import pprint
 
 from modules.errors import report_error_requirement_not_met
 
@@ -14,6 +15,7 @@ def get_dictionary_to_be_moved(searched_id: str, list_dictionaries: list[dict]) 
     :return: tuple where the 1st element is the dictionary to be moved and the 2nd is the updated dictionaries list.
     :rtype: (dict, list[dict])
     """
+
     # Search dictionary to be moved
     for index, dictionary in enumerate(list_dictionaries):
         if dictionary["id"] == searched_id:
@@ -25,6 +27,11 @@ def get_dictionary_to_be_moved(searched_id: str, list_dictionaries: list[dict]) 
 
 def substitute_internal_ids(all_ids_list: list[str], list_dictionaries: list[dict]) -> list[dict]:
     """ Identifies internal ids to be substituted, gets the corresponding dictionaries and does the substitution.
+    There are four possibilities:
+    1. Field is a list and the algorithm must be applied to each element on the list.
+    2. Field is a dictionary and the algorithm must be applied to the dictionary.
+    3. Conditions met and value substituted.
+    4. Conditions not met and no value substituted.
 
     :param all_ids_list: all ids that can be substituted.
     :type all_ids_list: list[str]
@@ -34,23 +41,34 @@ def substitute_internal_ids(all_ids_list: list[str], list_dictionaries: list[dic
     :rtype: list[dict]
     """
 
-    replaceable_keys = ["model"]
+    replaceable_keys = ["model", "contents"]
 
     # For each dictionary, verifies if there are values that can be substituted by other dictionaries
     for dictionary in list_dictionaries:
         for key in dictionary.keys():
 
+            # VERIFYING CASE 1: if value is a dictionary
+            if type(dictionary[key]) is dict:
+                list_dictionaries = substitute_internal_ids(all_ids_list,[dictionary[key]])
+            break
+
+            # VERIFYING CASE 1: if value is a dictionary
+
+
+
+            # VERIFYING CASES 3 AND 4
+
             # CONDITION 1: Searched key must not be the own dictionary id
             if key == "id":
                 continue
-
             # CONDITION 2: Value must be an ID of other dictionary
             if dictionary[key] not in all_ids_list:
                 continue
-
             # CONDITION 3: Key must be replaceable
             if key not in replaceable_keys:
                 continue
+
+            # VERIFYING CASE3
 
             # If all conditions are met, get dictionary to be included
             dictionary_to_move, list_dictionaries = get_dictionary_to_be_moved(dictionary[key], list_dictionaries)
@@ -78,9 +96,22 @@ def mount_json_dictionary(list_dictionaries: list[dict]) -> dict:
         if dictionary['type'] != 'Project':
             all_ids_list.append(dictionary['id'])
 
+    print("before while")
+    pprint(list_dictionaries)
+    count = 0
+
     # Iteratively substitute fields with ids as values by whole dictionaries until there is only one left
     while len(list_dictionaries) != 1:
+        count += 1
+        print(f"\nInside while. Iteration {count}. Size = {len(list_dictionaries)}\n")
+
         list_dictionaries = substitute_internal_ids(all_ids_list, list_dictionaries)
+
+        if count > 2:
+            break
+
+    print("after while")
+    pprint(list_dictionaries)
 
     # The resulting dictionary in the list is going to be the full JSON dictionary
     json_data = list_dictionaries[0].copy()

@@ -1,4 +1,6 @@
 """ Encoding functions for the diverse types of objects that are part of the OntoUML-Schema. """
+from pprint import pprint
+
 from rdflib import Graph
 
 from modules.encoder.encoder_create import create_data_dictionaries
@@ -20,5 +22,8 @@ def encode_graph_to_json(ontology_graph: Graph) -> dict:
 
     # Mount dictionaries into a single dictionary using the compositions
     json_data = mount_json_dictionary(list_dictionaries)
+
+    print("got json_data")
+    pprint(json_data)
 
     return json_data
