@@ -54,4 +54,5 @@
 :rmX6WxGFS_j2pAqf
     rdf:type        ontouml:Diagram ;
     ontouml:project :dGSNHRGFS_j2pAvw ;
-    ontouml:name    "MyPackage3ClassDiagram" .
+    ontouml:name    "MyPackage3ClassDiagram" ;
+    ontouml:owner   :XQ6WxGFS_j2pAor .
