@@ -1,10 +1,10 @@
 """ Encoding functions for the diverse types of objects that are part of the OntoUML-Schema. """
-from pprint import pprint
 
 from rdflib import Graph
 
 from modules.encoder.encoder_create import create_data_dictionaries
 from modules.encoder.encoder_mount import mount_json_dictionary
+from modules.encoder.encoder_types_treatment import treat_dictionary_types
 
 
 def encode_graph_to_json(ontology_graph: Graph) -> dict:
@@ -19,6 +19,9 @@ def encode_graph_to_json(ontology_graph: Graph) -> dict:
 
     # Creating a list of individual dictionaries to be later mounted into a single dictionary using the compositions
     list_dictionaries = create_data_dictionaries(ontology_graph)
+
+    # Treating specific types
+    treat_dictionary_types(list_dictionaries, ontology_graph)
 
     # Mount dictionaries into a single dictionary using the compositions
     json_data = mount_json_dictionary(list_dictionaries)

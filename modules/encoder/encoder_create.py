@@ -19,9 +19,10 @@ def return_key_pattern(object_type: str) -> list[str]:
     # Individual lists for each object type
     keys_project = ["id", "name", "description", "type", "model", "diagrams"]
     keys_package = ["id", "name", "description", "type", "propertyAssignments", "contents"]
+    keys_diagram = ["id", "name", "description", "type", "owner", "id", "type", "contents"]
 
     # General dictionary
-    json_keys = {"Project": keys_project, "Package": keys_package}
+    json_keys = {"Project": keys_project, "Package": keys_package, "Diagram": keys_diagram}
 
     # If key not found, report error.
     if object_type not in json_keys.keys():
@@ -90,7 +91,8 @@ def create_individual_object_dictionary(uri_elem_id: URIRef, uri_elem_type: URIR
     elem_type = uri_elem_type.toPython().replace(URI_ONTOUML, "")
 
     object_dictionary = {"id": elem_id, "type": elem_type}
-    json_field_list = ["contents"]
+    json_field_list = ["contents", "diagrams"]
+    mapped_elements = {"diagram": "diagrams"}
 
     for s, p, o in ontology_graph.triples((uri_elem_id, None, None)):
 
@@ -104,6 +106,10 @@ def create_individual_object_dictionary(uri_elem_id: URIRef, uri_elem_type: URIR
 
         dict_key = get_json_schema_dict_key(p.toPython().replace(URI_ONTOUML, ""))
         dict_value = o.toPython().replace(URI_ONTOLOGY, "")
+
+        # Treating cases where the vocabulary property has different name from JSON field
+        if dict_key in mapped_elements:
+            dict_key = mapped_elements[dict_key]
 
         if dict_key in json_field_list:
             # If not initialized yet, first initialize
@@ -131,8 +137,18 @@ def fill_json_objects(object_dict: dict, object_type: str) -> dict:
 
     keys_list = return_key_pattern(object_type)
 
-    # If the key is not found in the received dictionary, it will receive this new key with value None
+    print(f"{keys_list = }")
+
+    # SPECIFIC CASE
+    # If any specific case is found, it must be treated here.
+
+    # Specific Case 1: Issue XX opened.
+    # if (object_dict["type"]=="Diagram") and ("contents" not in object_dict):
+    #     object_dict["contents"] = []
+
+    # GENERAL CASE
     for key in keys_list:
+        # If the key is not found in the received dictionary, it will receive this new key with value None
         if key not in object_dict.keys():
             object_dict[key] = None
 

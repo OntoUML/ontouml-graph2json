@@ -8,7 +8,7 @@ QUERY_FUTURE_OBJECTS = """
                             ?elem_uri rdf:type ?elem_type .
                         }"""
 
-QUERY_OBJECT_PROPERTIES = """
+QUERY_OBJECT_TYPES = """
                             PREFIX ontouml: <https://w3id.org/ontouml#>
                             SELECT DISTINCT ?elem_uri ?elem_type
                             WHERE {

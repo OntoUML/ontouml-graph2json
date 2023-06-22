@@ -170,3 +170,4 @@ cython_debug/
 /.idea/workspace.xml
 /tests/results/
 /.idea/sonarlint/issuestore/0/3/03a0fdeeb483e48a3c862cb7df7bad44a180d993
+/results/

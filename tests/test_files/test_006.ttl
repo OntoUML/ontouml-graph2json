@@ -42,4 +42,5 @@
 :k8p6WxGFS_j2pApt
     rdf:type        ontouml:Diagram ;
     ontouml:project :dGSNHRGFS_j2pAvw ;
-    ontouml:name    "MyModelClassDiagram1" .
+    ontouml:name    "MyModelClassDiagram1" ;
+    ontouml:owner   :n4ZaWxGFS_j2pAoS .
