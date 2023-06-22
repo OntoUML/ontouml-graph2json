@@ -137,8 +137,6 @@ def fill_json_objects(object_dict: dict, object_type: str) -> dict:
 
     keys_list = return_key_pattern(object_type)
 
-    print(f"{keys_list = }")
-
     # SPECIFIC CASE
     # If any specific case is found, it must be treated here.
 
