@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from main import ontouml_graph2json
-from modules.io_json import safe_load_json_file
+from src.main import ontouml_graph2json
+from src.modules.io_json import safe_load_json_file
 from tests.test_aux import get_test_list, compare_json_files_data
 
 LIST_OF_TESTS = get_test_list()

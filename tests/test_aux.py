@@ -3,7 +3,7 @@ import glob
 
 from deepdiff import DeepDiff
 
-from modules.utils import safe_write_dict_to_txt_file
+from src.modules.utils import safe_write_dict_to_txt_file
 
 
 def get_test_list() -> list[str]:
