@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from src.main import ontouml_graph2json
+from src.main import encode_ontouml_graph2json
 from src.modules.io_json import safe_load_json_file
 from tests.test_aux import get_test_list, compare_json_files_data
 
@@ -24,7 +24,7 @@ def test_ontouml_graph2json(input_file: str) -> None:
     test_name = Path(input_file).stem
 
     # Create resulting JSON dictionary
-    resulting_json_data = ontouml_graph2json(input_file, "test")
+    resulting_json_data = encode_ontouml_graph2json(input_file, "test")
 
     # Getting expected result
     expected_json_file = input_file.replace(".ttl", ".json")

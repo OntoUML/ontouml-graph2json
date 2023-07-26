@@ -1,20 +1,17 @@
 """ Main file for encoding a graph into a OntoUML-Schema JSON. """
-import os
 import time
-from pprint import pprint
 
-import toml as toml
-
-from modules.arguments import treat_user_arguments
 from modules.encoder.encoder_main import encode_graph_to_json
 from modules.io_graph import load_all_graph_safely
 from modules.io_json import save_json_file
 from modules.logger import initialize_logger
 from modules.utils import get_date_time
+from src.modules.arguments import ARGUMENTS
 
 
-def ontouml_graph2json(graph_file_path: str, execution_mode: str = "production") -> dict:
-    """ Main function for ontouml-graph2json.
+def encode_ontouml_graph2json(graph_file_path: str, execution_mode: str = "production") -> dict:
+    """ Main function for ontouml-graph2json. Encodes a graph that complies with the OntoUML Vocabulary in a JSON file
+    that complies with the OntoUML Schema.
 
     :param graph_file_path: Path to the Graph file to be encoded, provided by the user.
     :type graph_file_path: str
@@ -24,11 +21,7 @@ def ontouml_graph2json(graph_file_path: str, execution_mode: str = "production")
     :rtype: dict
     """
 
-    metadata = toml.load("../pyproject.toml")
     logger = initialize_logger(execution_mode)
-
-    # Make global metadata, user arguments, and other specific global variables
-
 
     if execution_mode == "production":
         # Initial time information
@@ -60,8 +53,4 @@ def ontouml_graph2json(graph_file_path: str, execution_mode: str = "production")
 
 
 if __name__ == '__main__':
-    # Treat arguments
-    graph_path = treat_user_arguments()
-
-    # Execute
-    ontouml_graph2json(graph_path, "production")
+    encode_ontouml_graph2json(ARGUMENTS["graph_path"], "production")

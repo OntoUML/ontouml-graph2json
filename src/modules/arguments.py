@@ -1,44 +1,48 @@
-""" Argument Treatments """
+""" Contains the definitions of the arguments to be provided by the user. Publishes the arguments (as the global
+variable ARGUMENTS of type dictionary) to be used in other modules whenever necessary. """
 
 import argparse
 
-from src.modules.globals import SOFTWARE_ACRONYM, SOFTWARE_VERSION, SOFTWARE_NAME, SOFTWARE_URL
+from src.modules.globals import METADATA
 from src.modules.logger import initialize_logger
 
 LOGGER = initialize_logger()
 
 
-def treat_user_arguments() -> str:
+def treat_user_arguments() -> dict:
     """ Treat arguments provided by the user when starting software execution.
 
-    :return: Path to the graph file to be encoded provided by the user.
-    :rtype: str
+    :return: Dictionary containing all arguments provided by the user.
+    :rtype: dict
     """
 
-    LOGGER.debug("Parsing user's arguments...")
-
-    about_message = SOFTWARE_ACRONYM + " - version " + SOFTWARE_VERSION
+    about_message = METADATA["name"] + " - version " + METADATA["version"]
 
     # PARSING ARGUMENTS
-    arguments_parser = argparse.ArgumentParser(prog=SOFTWARE_ACRONYM,
-                                               description=SOFTWARE_NAME + ". Version: " + SOFTWARE_VERSION,
-                                               allow_abbrev=False, epilog="More information at: " + SOFTWARE_URL)
+    args_parser = argparse.ArgumentParser(prog=METADATA["name"],
+                                          description=METADATA["description"] + ". Version: " + METADATA["version"],
+                                          allow_abbrev=False,
+                                          epilog="More information at: " + METADATA["homepage"])
 
-    arguments_parser.version = about_message
+    args_parser.version = about_message
 
     # POSITIONAL ARGUMENT
-    arguments_parser.add_argument("graph_file", type=str, action="store",
-                                  help="The path of the graph file to be encoded.")
+    args_parser.add_argument("graph_file", type=str, action="store",
+                             help="The path of the graph file to be encoded.")
 
     # AUTOMATIC ARGUMENTS
-    arguments_parser.add_argument("-v", "--version", action="version", help="Prints the software version and exits.")
+    args_parser.add_argument("-v", "--version", action="version", help="Prints the software version and exits.")
 
     # Execute arguments parser
-    arguments = arguments_parser.parse_args()
+    arguments = args_parser.parse_args()
 
     # Asserting dictionary keys
     arguments_dictionary = {"graph_path": arguments.graph_file}
 
     LOGGER.debug(f"Arguments parsed. Obtained values are: {arguments_dictionary}.")
 
-    return arguments_dictionary["graph_path"]
+    return arguments_dictionary
+
+
+global ARGUMENTS
+ARGUMENTS = treat_user_arguments()
